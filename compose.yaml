@@ -1,0 +1,30 @@
+# Everhaven dashboard behind a LayerV qURL tunnel connector.
+#
+# `web` serves the dashboard ONLY inside the shared Docker network namespace.
+# It publishes NO ports, so the dashboard has ZERO public inbound. The only way
+# in is the `qurl-connector` sidecar, which dials OUTBOUND to LayerV.
+
+services:
+  web:
+    image: nginx:alpine
+    restart: unless-stopped
+    volumes:
+      - ./dashboard:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    # Intentionally NO `ports:` — never add one, that re-exposes the dashboard.
+
+  qurl-connector:
+    image: ghcr.io/layervai/qurl-connector:latest
+    # If your Slack / dashboard output shows a specific version (vX.Y.Z),
+    # replace `:latest` above with that exact tag.
+    restart: unless-stopped
+    depends_on:
+      - web
+    network_mode: "service:web"        # share web's network namespace → reach 127.0.0.1:8080
+    volumes:
+      - ./secret:/run/secrets/qurl-connector:ro
+      - ./agent-state:/var/lib/layerv/agent
+      - ./qurl-proxy.yaml:/work/qurl-proxy.yaml:ro
+    environment:
+      QURL_CONNECTOR_ID: everhaven-dashboard
+      QURL_API_KEY_FILE: /run/secrets/qurl-connector/api_key

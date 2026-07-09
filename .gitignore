@@ -1,0 +1,3 @@
+# Never commit the bootstrap key or the connector's identity state.
+secret/
+agent-state/

@@ -1,0 +1,6 @@
+# Tells the LayerV connector which LOCAL service to expose.
+# Points at the private nginx `web` service inside the shared network namespace.
+routes:
+  - type: http
+    local_ip: 127.0.0.1
+    local_port: 8080
