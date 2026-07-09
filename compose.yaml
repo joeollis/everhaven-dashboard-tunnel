@@ -28,3 +28,6 @@ services:
     environment:
       QURL_CONNECTOR_ID: everhaven-dashboard
       QURL_API_KEY_FILE: /run/secrets/qurl-connector/api_key
+      # Point the connector at the environment where the key is valid.
+      # PROD: https://api.layerv.ai/v1   |   SANDBOX: https://api.layerv.xyz/v1
+      QURL_API_URL: https://api.layerv.ai/v1
