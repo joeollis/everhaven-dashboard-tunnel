@@ -31,3 +31,7 @@ services:
       # Point the connector at the environment where the key is valid.
       # PROD: https://api.layerv.ai/v1   |   SANDBOX: https://api.layerv.xyz/v1
       QURL_API_URL: https://api.layerv.ai/v1
+      # WORKAROUND: the connector sends agent bootstrap to a SEPARATE host
+      # (bootstrap.layerv.ai), which currently returns a blanket nginx 403.
+      # api.layerv.ai serves bootstrap fine, so override the bootstrap host.
+      QURL_BOOTSTRAP_URL: https://api.layerv.ai/v1
