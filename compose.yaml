@@ -14,10 +14,12 @@ services:
     # Intentionally NO `ports:` — never add one, that re-exposes the dashboard.
 
   qurl-connector:
-    # Pinned, not :latest — v0.7.1 is the newest published connector
-    # (GitHub marks it Pre-release; it builds on qurl-go v0.5.2, which is
-    # wire-compatible with the v0.5.3 SDK the site's mint function uses).
-    image: ghcr.io/layervai/qurl-connector:v0.7.1
+    # Pinned, not :latest. NOTE: GitHub releases go to v0.7.1 but ghcr images
+    # were only ever published through v0.5.0 (digest-identical to :latest as
+    # of 2026-08-17, sha256:ef343d29…) — reported upstream. v0.5.0 predates
+    # the QURL_CONNECTOR_HUB_* vars below; if the logs show them ignored and
+    # sandbox enrollment fails, the fallback is building v0.7.1 from source.
+    image: ghcr.io/layervai/qurl-connector:v0.5.0
     restart: unless-stopped
     depends_on:
       - web
