@@ -17,7 +17,9 @@
 #   docker build -f connector.Dockerfile -t everhaven/qurl-connector:sandbox-77ac777 .
 FROM gcr.io/distroless/static-debian12:nonroot@sha256:f5b485ea962d9bd1186b2f6b3a061191539b905b82ec395de78cbfae51f20e35
 
-COPY qurl-connector-linux-amd64 /usr/local/bin/qurl-connector
+# --chmod: the exec bit doesn't reliably survive gzip/download, and COPY
+# preserves source mode — set it explicitly so the build never depends on it.
+COPY --chmod=0755 qurl-connector-linux-amd64 /usr/local/bin/qurl-connector
 
 WORKDIR /work
 
