@@ -36,8 +36,15 @@ cat <<EOF
       • LayerV Slack:
           /qurl-admin protect-connector everhaven-dashboard \\
              env:docker-compose port:8080 service:web
-      • or your web console: layerv.ai/qurl/dashboard
-    (Use the SAME environment — sandbox — as the rest of the demo.)
+      • or mint an enrollment token with a STAGING key against sandbox:
+          POST https://api.layerv.xyz/v1/api-keys
+          { "kind": "enrollment_token", "name": "everhaven connector",
+            "target": "connector",
+            "claims": [{ "type": "connector", "id": "everhaven-dashboard" }],
+            "expires_in": "2h" }
+      • or the staging web console: staging.layerv.ai/qurl/dashboard
+    (Everything in this demo runs against SANDBOX — api.layerv.xyz + the
+     hub triple already set in compose.yaml. Keys and tokens must be staging.)
 
  2) Save the key on the droplet:
       printf '%s' 'PASTE_BOOTSTRAP_KEY_HERE' > $DIR/secret/api_key

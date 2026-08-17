@@ -32,7 +32,7 @@ It installs Docker, pulls this repo, and starts the private dashboard. When it
 finishes it prints the next few commands — they're also here:
 
 ### 4. Mint the connector key
-In **LayerV Slack** (or your web console at `layerv.ai/qurl/dashboard`):
+In **LayerV Slack** (or the staging console at `staging.layerv.ai/qurl/dashboard` — the demo runs against sandbox):
 ```
 /qurl-admin protect-connector everhaven-dashboard env:docker-compose port:8080 service:web
 ```
@@ -59,7 +59,7 @@ end-to-end test so we watch the dashboard vanish on reload.
 ## Notes
 - **Always-on:** the droplet stays up and the connector reconnects on reboot
   using its saved identity in `agent-state/`. You never touch the key again.
-- **If `:latest` image fails to pull:** the Slack/console output shows a specific
-  version tag — put it in `compose.yaml` in place of `:latest`.
+- **Image tag:** `compose.yaml` pins `qurl-connector:v0.7.1` (no more `:latest`).
+  When a newer connector ships, change the pin deliberately.
 - **No secrets in this repo:** the bootstrap key (`secret/`) and connector
   identity (`agent-state/`) are gitignored and live only on the droplet.

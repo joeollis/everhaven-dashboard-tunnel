@@ -14,9 +14,10 @@ services:
     # Intentionally NO `ports:` — never add one, that re-exposes the dashboard.
 
   qurl-connector:
-    image: ghcr.io/layervai/qurl-connector:latest
-    # If your Slack / dashboard output shows a specific version (vX.Y.Z),
-    # replace `:latest` above with that exact tag.
+    # Pinned, not :latest — v0.7.1 is the newest published connector
+    # (GitHub marks it Pre-release; it builds on qurl-go v0.5.2, which is
+    # wire-compatible with the v0.5.3 SDK the site's mint function uses).
+    image: ghcr.io/layervai/qurl-connector:v0.7.1
     restart: unless-stopped
     depends_on:
       - web
@@ -29,9 +30,18 @@ services:
       QURL_CONNECTOR_ID: everhaven-dashboard
       QURL_API_KEY_FILE: /run/secrets/qurl-connector/api_key
       # Point the connector at the environment where the key is valid.
-      # PROD: https://api.layerv.ai/v1   |   SANDBOX: https://api.layerv.xyz/v1
-      QURL_API_URL: https://api.layerv.ai/v1
-      # WORKAROUND: the connector sends agent bootstrap to a SEPARATE host
-      # (bootstrap.layerv.ai), which currently returns a blanket nginx 403.
-      # api.layerv.ai serves bootstrap fine, so override the bootstrap host.
-      QURL_BOOTSTRAP_URL: https://api.layerv.ai/v1
+      # SANDBOX (current): https://api.layerv.xyz/v1 | PROD: https://api.layerv.ai/v1
+      # The whole demo runs against sandbox until the new API ships to prod;
+      # cutting back over is this pair of URLs plus a fresh enrollment.
+      QURL_API_URL: https://api.layerv.xyz/v1
+      # WORKAROUND (verify-then-drop): the connector derives its bootstrap host
+      # by rewriting api.layerv.<tld> → bootstrap.layerv.<tld>, and the prod
+      # bootstrap host returned a blanket nginx 403 (qurl-service#1180). Keep
+      # the override pointed at the API host on sandbox too until the sandbox
+      # bootstrap host is confirmed to serve.
+      QURL_BOOTSTRAP_URL: https://api.layerv.xyz/v1
+      # NHP hub trust root for sandbox — all-or-none triple; values from
+      # qurl-go docs/testing-against-nhp.md (published sandbox estate).
+      QURL_CONNECTOR_HUB_HOST: hub.nhp.layerv.xyz
+      QURL_CONNECTOR_HUB_PORT: "443"
+      QURL_CONNECTOR_HUB_SERVER_PUBLIC_KEY_B64: UhVQcrKoJ2LhQlRtuIItBjxXR2wA/VvZvTmqnzT+GS8=
