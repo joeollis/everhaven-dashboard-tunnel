@@ -14,12 +14,14 @@ services:
     # Intentionally NO `ports:` — never add one, that re-exposes the dashboard.
 
   qurl-connector:
-    # Pinned, not :latest. NOTE: GitHub releases go to v0.7.1 but ghcr images
-    # were only ever published through v0.5.0 (digest-identical to :latest as
-    # of 2026-08-17, sha256:ef343d29…) — reported upstream. v0.5.0 predates
-    # the QURL_CONNECTOR_HUB_* vars below; if the logs show them ignored and
-    # sandbox enrollment fails, the fallback is building v0.7.1 from source.
-    image: ghcr.io/layervai/qurl-connector:v0.5.0
+    # Locally built image — see connector.Dockerfile. ghcr images stop at
+    # v0.5.0, which speaks the retired HTTP bootstrap API (404 on sandbox);
+    # this wraps a from-source binary of main @ 77ac777 (qurl-go v0.5.2),
+    # which enrolls via enrollment token + the hub triple below. Build on
+    # the droplet:
+    #   docker build -f connector.Dockerfile -t everhaven/qurl-connector:sandbox-77ac777 .
+    image: everhaven/qurl-connector:sandbox-77ac777
+    pull_policy: never
     restart: unless-stopped
     depends_on:
       - web

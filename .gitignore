@@ -1,3 +1,4 @@
 # Never commit the bootstrap key or the connector's identity state.
 secret/
 agent-state/
+qurl-connector-linux-amd64*
