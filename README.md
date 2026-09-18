@@ -42,3 +42,7 @@ The alternate `compose.production.yaml` plus `compose.bootstrap.yaml` implements
 The legacy `compose.yaml`, `connector.Dockerfile` and `qurl-proxy.yaml` are retained for rollback/reference only. Their obsolete sandbox connector is stopped. Administrative SSH remains separate from the dashboard; there are no public dashboard listeners.
 
 The prior personal-account deployment in `compose.native.yaml` and its `state-v2/` directory are retained for rollback. Do not run `down --remove-orphans` or delete these identity files during migration.
+
+## Custom-domain blocker
+
+The production API rejects binding the active custom domain to this native connector: `custom_domain is not supported for qURL Connector resources`. DNS and TLS are ready, but the domain is unbound. Sessions use temporary `qurl.site` addresses. The dashboard UI misleadingly exposes a selector for this unsupported operation. Keep the origin private; no inbound ports should be opened to work around this limitation.
