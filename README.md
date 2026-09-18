@@ -1,65 +1,26 @@
-# Everhaven dashboard — LayerV tunnel connector (DigitalOcean)
+# Everhaven private dashboard
 
-Makes the demo dashboard **genuinely disappear** when a QURL expires. The
-dashboard runs with **no public inbound** and is reachable *only* through
-LayerV's connector, so direct hits to the origin fail and access ends when the
-60-second session ends.
+This repository serves fictional portfolio data on DigitalOcean through an outbound LayerV connector. The public landing page is a separate Netlify deployment in `joeollis/everhavencapital`.
 
-Netlify keeps hosting the public marketing site (everhavencapital.com); only the
-dashboard moves here.
+## Production design
 
----
+`compose.production.yaml` runs Nginx on **127.0.0.1:8080 inside a Docker network namespace**, shared with qurl v2.6.0. There are no published host ports. Both containers are non-root, read-only, drop all capabilities and disallow privilege escalation. The qurl image is pinned to the official release digest.
 
-## Your steps (~10 min, once)
+Nginx sends no-store and no-referrer headers and loads no third-party fonts, scripts or telemetry. The `/healthz` route is private and supports real session-expiry checks. Already-downloaded content is not erased when a session expires.
 
-### 1. Create the droplet
-DigitalOcean → **Create → Droplets**:
-- **Image:** Ubuntu 24.04 (LTS)
-- **Size:** Basic → Regular → **$6/mo** (1 GB / 1 vCPU) is plenty
-- **Authentication:** Password is fine (you'll use the browser console)
-- Click **Create Droplet**, wait ~30s.
+`dashboard.everhavencapital.com` must have no public DNS record. No custom-domain certificate or DNS delegation is needed for the origin. The legacy Netlify dashboard deployment and previews must remain private.
 
-### 2. Open the browser console
-On the droplet page: **Access → Launch Droplet Console**. A terminal opens in
-your browser — no SSH keys needed.
+## Enrollment and deployment
 
-### 3. Run the one-shot installer
-Paste this single line and press Enter:
-```sh
-curl -fsSL https://raw.githubusercontent.com/joeollis/everhaven-dashboard-tunnel/main/deploy.sh | bash
-```
-It installs Docker, pulls this repo, and starts the private dashboard. When it
-finishes it prints the next few commands — they're also here:
+Use the current LayerV protected-service setup to obtain a **version 2 headless share configuration and one-time enrollment token for the same production owner and resource**. Preserve the returned CRID, resource ID, routing ID, knock resource ID and serving epoch exactly. Do not derive identifiers from a hostname or copy old sandbox state.
 
-### 4. Mint the connector key
-In **LayerV Slack** (or the staging console at `staging.layerv.ai/qurl/dashboard` — the demo runs against sandbox):
-```
-/qurl-admin protect-connector everhaven-dashboard env:docker-compose port:8080 service:web
-```
-Copy the **bootstrap key** it gives you. *(Why a key at all? LayerV blocks API
-keys from minting other keys — a security rule — so this one admin step needs
-your login. It's one-time.)*
+1. Place generated non-secret configuration in `runtime/share.yaml` (mode 0444). Set its loopback target to `http://127.0.0.1:8080` using the service setup.
+2. Create `state-v2/` and `secret-v2/` as UID/GID 65532 with mode 0700. The enrollment token goes into `secret-v2/enrollment-token`, owned by 65532:65532, mode 0400. Never put credentials into shell history, Git or logs.
+3. Stop the retired `qurl-connector` container. Retain its complete old state for rollback; do not mix identity files.
+4. Start with `docker compose -f compose.production.yaml -f compose.bootstrap.yaml up -d`. Confirm origin health and actual LayerV serving state.
+5. Warm-start using `docker compose -f compose.production.yaml up -d`. Confirm the resource is serving without an enrollment-token flag or secret mount, then remove the consumed one-time token.
+6. Set the resulting production CRID and a production mint key in the Netlify server environment. Verify a new qURL, single-use behavior, and a fresh origin request after the two-minute session expires.
 
-### 5. Drop in the key and start the connector
-```sh
-cd /opt/everhaven-tunnel
-printf '%s' 'PASTE_BOOTSTRAP_KEY_HERE' > secret/api_key
-docker compose up -d
-docker compose logs -f qurl-connector      # wait for a successful connection, then Ctrl-C
-rm -f secret/api_key                        # key is one-time; remove it
-```
+The legacy `compose.yaml`, `connector.Dockerfile` and `qurl-proxy.yaml` are retained only for rollback/reference. Do not use the old `deploy.sh` installer for this production configuration.
 
-### 6. Tell Claude "connector is live"
-Then I finish the rest: point `dashboard.everhavencapital.com` at this connector,
-update the homepage's mint call (with `session_duration: 60s`), and re-run the
-end-to-end test so we watch the dashboard vanish on reload.
-
----
-
-## Notes
-- **Always-on:** the droplet stays up and the connector reconnects on reboot
-  using its saved identity in `agent-state/`. You never touch the key again.
-- **Image tag:** `compose.yaml` pins `qurl-connector:v0.7.1` (no more `:latest`).
-  When a newer connector ships, change the pin deliberately.
-- **No secrets in this repo:** the bootstrap key (`secret/`) and connector
-  identity (`agent-state/`) are gitignored and live only on the droplet.
+Check the live host for unintended listeners and Docker port mappings, and test direct requests to its public IP. SSH is an administrative listener, not a dashboard listener.

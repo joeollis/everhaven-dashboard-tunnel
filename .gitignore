@@ -2,3 +2,8 @@
 secret/
 agent-state/
 qurl-connector-linux-amd64*
+
+# Production native identity and generated account-specific configuration
+state-v2/
+secret-v2/
+runtime/
