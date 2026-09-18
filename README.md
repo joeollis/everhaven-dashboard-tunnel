@@ -10,7 +10,7 @@ The official native CLI publishes the loopback service with `--foreground`, runn
 
 Nginx sends no-store and no-referrer headers and loads no third-party fonts, scripts or telemetry. Its private `/healthz` route supports session-expiry checks. Downloaded content is not erased when a session expires.
 
-The production connector belongs to the `joe@layerv.ai` Enterprise account. `dashboard.everhavencapital.com` has public DNS pointing to LayerV’s production gateway, with DNS verification and certificate delegation. That gateway record does not expose the private origin. The legacy Netlify dashboard and previews must remain private.
+The production connector belongs to the `joe@layerv.ai` Enterprise account. `portal.everhavencapital.com` is the fresh production domain and has public DNS pointing to LayerV’s production gateway, with DNS verification and certificate delegation. That gateway record does not expose the private origin. The legacy Netlify dashboard and previews must remain private.
 
 ## First enrollment
 
@@ -45,4 +45,4 @@ The prior personal-account deployment in `compose.native.yaml` and its `state-v2
 
 ## Custom-domain blocker
 
-The production API rejects binding the active custom domain to this native connector: `custom_domain is not supported for qURL Connector resources`. DNS and TLS are ready, but the domain is unbound. Sessions use temporary `qurl.site` addresses. The dashboard UI misleadingly exposes a selector for this unsupported operation. Keep the origin private; no inbound ports should be opened to work around this limitation.
+The production API rejects binding the active custom domain to this native connector: `custom_domain is not supported for qURL Connector resources`. The fresh portal hostname passed DNS verification and is Active, but resource assignment still fails. This reproduces the rejection independently of the older dashboard hostname registered in staging. The domain is unbound. Sessions use temporary `qurl.site` addresses. The dashboard UI misleadingly exposes a selector for this unsupported operation. Keep the origin private; no inbound ports should be opened to work around this limitation.
