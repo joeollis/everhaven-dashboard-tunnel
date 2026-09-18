@@ -1,6 +1,6 @@
 # Everhaven private dashboard
 
-Fictional portfolio data served on DigitalOcean through an outbound LayerV connector. The public landing page is a separate Netlify deployment in `joeollis/everhavencapital`.
+Fictional company research served on DigitalOcean through an outbound LayerV connector. The public landing page is a separate Netlify deployment in `joeollis/everhavencapital`.
 
 ## Active deployment
 
@@ -46,3 +46,7 @@ The prior personal-account deployment in `compose.native.yaml` and its `state-v2
 ## Custom-domain blocker
 
 The production API rejects binding the active custom domain to this native connector: `custom_domain is not supported for qURL Connector resources`. The fresh portal hostname passed DNS verification and is Active, but resource assignment still fails. This reproduces the rejection independently of the older dashboard hostname registered in staging. The domain is unbound. Sessions use temporary `qurl.site` addresses. The dashboard UI misleadingly exposes a selector for this unsupported operation. Keep the origin private; no inbound ports should be opened to work around this limitation.
+
+## Analyst demo content
+
+The briefing follows one pre-approved fictional external analyst, Maya Chen, reviewing Northline Manufacturing. Approval is simulated by the public demo, not authenticated by this static application. Research tables are server-rendered HTML; `brief.md`, `research.json` and `research.csv` provide the same fictional dataset through the protected route. They must not be copied into the public Netlify deployment. `check_protected_access` and `read_research_data` are optional WebMCP tools in supporting browsers; the fresh health button and relative data URLs remain the portable interfaces.
