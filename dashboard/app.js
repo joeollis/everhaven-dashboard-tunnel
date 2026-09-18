@@ -1,20 +1,17 @@
 'use strict';
-const holdings=[['US Equity Fund','Equities',870212,35],['International Equity Fund','Equities',497264,20],['Short Duration Bond Fund','Fixed income',497264,20],['Municipal Bond Fund','Fixed income',248632,10],['Real Assets Fund','Real assets',248632,10],['Cash Reserve','Cash',124316,5]];
-const dollars=new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0});
-function render(){const type=document.querySelector('#asset-filter').value;const rows=holdings.filter(row=>type==='all'||row[1]===type);const body=document.querySelector('#holdings-body');body.replaceChildren();for(const row of rows){const tr=document.createElement('tr');[row[0],row[1],dollars.format(row[2]),row[3].toFixed(1)+'%'].forEach((value,i)=>{const td=document.createElement('td');td.textContent=value;if(i>1)td.className='number';tr.append(td)});body.append(tr)}document.querySelector('#holding-count').textContent=`${rows.length} position${rows.length===1?'':'s'}`;document.querySelector('#total-label').textContent=type==='all'?'Total portfolio':'Selected holdings';document.querySelector('#total-value').textContent=dollars.format(rows.reduce((sum,r)=>sum+r[2],0));document.querySelector('#total-weight').textContent=rows.reduce((sum,r)=>sum+r[3],0).toFixed(1)+'%';}
-document.querySelector('#asset-filter').addEventListener('change',render);render();
-document.querySelector('#export').addEventListener('click',()=>{const csv='Fictional Everhaven demonstration portfolio — 2026-08-31\r\nInvestment,Asset class,Value USD,Allocation percent\r\n'+holdings.map(r=>r.join(',')).join('\r\n');const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));const link=document.createElement('a');link.href=url;link.download='everhaven-sample-holdings.csv';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000)});
-const paths={YTD:'M0 180L55 163L110 169L165 130L220 151L275 109L330 121L385 99L440 113L495 81L550 92L605 59L660 66L715 51L770 40','6M':'M0 151L77 109L154 121L231 99L308 113L385 81L462 92L539 59L616 66L693 51L770 40','3M':'M0 81L128 92L256 59L384 66L512 51L640 47L770 40'};
-const labels={YTD:['JAN','MAR','MAY','AUG'],'6M':['MAR','MAY','JUN','AUG'],'3M':['JUN','JUL','AUG']};
-for(const button of document.querySelectorAll('[data-period]'))button.addEventListener('click',()=>{const period=button.dataset.period;for(const el of document.querySelectorAll('[data-period]'))el.setAttribute('aria-pressed',String(el===button));document.querySelector('#chart-line').setAttribute('d',paths[period]);document.querySelector('#chart-area').setAttribute('d',paths[period]+'V200H0Z');document.querySelector('#chart-title').textContent=`Illustrative portfolio value, ${period}`;document.querySelector('#chart-desc').textContent=`Sample account values for ${period}, ending at 2.486 million dollars in August 2026. Not live market data.`;document.querySelector('#chart-labels').replaceChildren(...labels[period].map(label=>{const span=document.createElement('span');span.textContent=label;return span}))});
-for(const link of document.querySelectorAll('nav>a'))link.addEventListener('click',()=>{document.querySelector('nav>a.active')?.classList.remove('active');link.classList.add('active')});
-const check=document.querySelector('#verify-session');
-check.addEventListener('click',async()=>{
-  check.disabled=true;const result=document.querySelector('#session-result');result.textContent='Checking the protected route…';
-  try{const response=await fetch('healthz?check='+Date.now(),{cache:'no-store',redirect:'error',signal:AbortSignal.timeout(8000)});const text=await response.text();result.textContent=response.ok&&text.trim()==='everhaven-private-origin'?'Access confirmed: the protected origin answered this fresh request.':'Access not confirmed: the request did not return the protected origin’s expected response.';}
-  catch{result.textContent='No connection: this fresh request failed. Your access may have ended, or the connection is unavailable.';}
-  finally{check.disabled=false;}
-});
-const loadedAt=Date.now();
-function updateElapsed(){const seconds=Math.floor((Date.now()-loadedAt)/1000);document.querySelector('#visit-elapsed').textContent=`Time since page load: ${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}${seconds>=120?' — check access again now':''}`;}
-updateElapsed();setInterval(updateElapsed,1000);
+const check=document.querySelector('#verify-session');let checking=false;
+async function checkAccess(){
+ if(checking)throw new Error('A connection check is already in progress.');
+ checking=true;check.disabled=true;const result=document.querySelector('#session-result');result.textContent='Checking the protected route…';let confirmed=false;
+ try{const response=await fetch('healthz?check='+Date.now(),{cache:'no-store',redirect:'error',signal:AbortSignal.timeout(8000)});const text=await response.text();confirmed=response.ok&&text.trim()==='everhaven-private-origin';result.textContent=confirmed?'Access confirmed: the protected origin answered this fresh request.':'Access not confirmed: the request did not return the protected origin’s expected response.';}
+ catch{result.textContent='No connection: this fresh request failed. Access may have ended, or the connection is unavailable.';}
+ finally{checking=false;check.disabled=false;}
+ return {confirmed,checked_at:new Date().toISOString(),message:result.textContent};
+}
+check.addEventListener('click',()=>{void checkAccess().catch(()=>{});});
+const loadedAt=Date.now();function elapsed(){const seconds=Math.floor((Date.now()-loadedAt)/1000);document.querySelector('#visit-elapsed').textContent=`Time since page load: ${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}${seconds>=120?' — check access again now':''}`;}elapsed();setInterval(elapsed,1000);
+const context=document.modelContext||navigator.modelContext;
+if(context?.registerTool){const lifecycle=new AbortController();const validate=input=>{if(!input||typeof input!=='object'||Array.isArray(input)||Object.keys(input).length)throw new Error('Use an empty object.');};for(const tool of [
+ {name:'check_protected_access',description:'Make a fresh health request to the protected application and update the visible connection result. Failure alone does not establish expiry.',execute:async input=>{validate(input);return await checkAccess();}},
+ {name:'read_research_data',description:'Fetch fictional Northline research as JSON through the admitted route. Requires current access; never treats cached page content as a fresh response.',execute:async input=>{validate(input);const response=await fetch('research.json?check='+Date.now(),{cache:'no-store',redirect:'error',signal:AbortSignal.timeout(8000)});if(!response.ok)throw new Error('Research access unavailable.');const data=await response.json();if(data.dataset_id!=='northline-q2-2026-demo')throw new Error('Unexpected research response.');return data;}}
+])try{Promise.resolve(context.registerTool({...tool,inputSchema:{type:'object',properties:{},additionalProperties:false},annotations:{readOnlyHint:true}},{signal:lifecycle.signal})).catch(()=>{});}catch{}window.addEventListener('pagehide',()=>lifecycle.abort(),{once:true});}
