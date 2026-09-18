@@ -1,0 +1,6 @@
+# First start only. Warm starts must use compose.production.yaml alone.
+services:
+  qurl:
+    volumes:
+      - ./secret-v2:/run/secrets/qurl:ro
+    command: [daemon, run, --state-dir, /var/lib/qurl, --headless-config, /etc/qurl/share.yaml, --enrollment-token-file, /run/secrets/qurl/enrollment-token]

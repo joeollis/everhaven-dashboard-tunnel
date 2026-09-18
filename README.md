@@ -1,65 +1,42 @@
-# Everhaven dashboard — LayerV tunnel connector (DigitalOcean)
+# Everhaven private dashboard
 
-Makes the demo dashboard **genuinely disappear** when a QURL expires. The
-dashboard runs with **no public inbound** and is reachable *only* through
-LayerV's connector, so direct hits to the origin fail and access ends when the
-60-second session ends.
+Fictional portfolio data served on DigitalOcean through an outbound LayerV connector. The public landing page is a separate Netlify deployment in `joeollis/everhavencapital`.
 
-Netlify keeps hosting the public marketing site (everhavencapital.com); only the
-dashboard moves here.
+## Active deployment
 
----
+Use **compose.native.yaml**. It runs Nginx on **127.0.0.1:8080 inside a Docker network namespace**, shared with qurl v2.6.0. No host ports are published. Both containers are non-root, read-only, drop all capabilities and disallow privilege escalation. The qurl image is pinned to the official release digest.
 
-## Your steps (~10 min, once)
+The official native CLI publishes the loopback service with `--foreground`, running the production daemon engine in the container process. Docker supervises that process and restarts it. Its stable Connector ID is `everhaven-dashboard-prod`; saved native identity and resource state live in the owner-only `state-v2/` volume. A clean stop closes sharing; the next start reuses the same CRID. This restart behavior was verified on the live demo.
 
-### 1. Create the droplet
-DigitalOcean → **Create → Droplets**:
-- **Image:** Ubuntu 24.04 (LTS)
-- **Size:** Basic → Regular → **$6/mo** (1 GB / 1 vCPU) is plenty
-- **Authentication:** Password is fine (you'll use the browser console)
-- Click **Create Droplet**, wait ~30s.
+Nginx sends no-store and no-referrer headers and loads no third-party fonts, scripts or telemetry. Its private `/healthz` route supports session-expiry checks. Downloaded content is not erased when a session expires.
 
-### 2. Open the browser console
-On the droplet page: **Access → Launch Droplet Console**. A terminal opens in
-your browser — no SSH keys needed.
+`dashboard.everhavencapital.com` has no public DNS records. No custom-domain certificate or DNS delegation is needed for the origin. The legacy Netlify dashboard and previews must remain private.
 
-### 3. Run the one-shot installer
-Paste this single line and press Enter:
+## First enrollment
+
+Use a production account setup key with native enrollment and connector enrollment permissions. Never put it in shell arguments, history, Git or image layers.
+
 ```sh
-curl -fsSL https://raw.githubusercontent.com/joeollis/everhaven-dashboard-tunnel/main/deploy.sh | bash
+install -d -m 0700 -o 65532 -g 65532 state-v2
+docker compose -f compose.native.yaml up -d web
+docker compose -f compose.native.yaml run --rm --no-deps qurl login
+# Paste the account key only at the hidden API-key prompt.
+docker compose -f compose.native.yaml up -d qurl
+docker compose -f compose.native.yaml logs --tail 30 qurl
 ```
-It installs Docker, pulls this repo, and starts the private dashboard. When it
-finishes it prints the next few commands — they're also here:
 
-### 4. Mint the connector key
-In **LayerV Slack** (or the staging console at `staging.layerv.ai/qurl/dashboard` — the demo runs against sandbox):
-```
-/qurl-admin protect-connector everhaven-dashboard env:docker-compose port:8080 service:web
-```
-Copy the **bootstrap key** it gives you. *(Why a key at all? LayerV blocks API
-keys from minting other keys — a security rule — so this one admin step needs
-your login. It's one-time.)*
+Wait for `Published` and `Status: serving`. Record the CRID verbatim. Configure the public site's server environment with that CRID and a separate read/write mint key. Revoke the temporary account setup key once enrollment and warm restart are verified; the saved restricted device identity handles subsequent starts.
 
-### 5. Drop in the key and start the connector
+## Operations
+
 ```sh
-cd /opt/everhaven-tunnel
-printf '%s' 'PASTE_BOOTSTRAP_KEY_HERE' > secret/api_key
-docker compose up -d
-docker compose logs -f qurl-connector      # wait for a successful connection, then Ctrl-C
-rm -f secret/api_key                        # key is one-time; remove it
+docker compose -f compose.native.yaml ps
+docker compose -f compose.native.yaml restart qurl
+docker compose -f compose.native.yaml exec -T qurl /usr/local/bin/qurl inspect <CRID> -o json
 ```
 
-### 6. Tell Claude "connector is live"
-Then I finish the rest: point `dashboard.everhavencapital.com` at this connector,
-update the homepage's mint call (with `session_duration: 60s`), and re-run the
-end-to-end test so we watch the dashboard vanish on reload.
+A running container alone does not prove serving. Check `connection_state`, `daemon_state` and `local_target_health`, and test an actual qURL. If replacing the web container, recreate the qurl container too because they share a network namespace. Back up the entire state directory securely; do not copy selected identity files or share a state directory between independent deployments.
 
----
+The alternate `compose.production.yaml` plus `compose.bootstrap.yaml` implements LayerV's enterprise headless-config path, which requires genuine generated account-specific share identifiers. It is not the active deployment and must not be started against the native deployment's state directory.
 
-## Notes
-- **Always-on:** the droplet stays up and the connector reconnects on reboot
-  using its saved identity in `agent-state/`. You never touch the key again.
-- **Image tag:** `compose.yaml` pins `qurl-connector:v0.7.1` (no more `:latest`).
-  When a newer connector ships, change the pin deliberately.
-- **No secrets in this repo:** the bootstrap key (`secret/`) and connector
-  identity (`agent-state/`) are gitignored and live only on the droplet.
+The legacy `compose.yaml`, `connector.Dockerfile` and `qurl-proxy.yaml` are retained for rollback/reference only. Their obsolete sandbox connector is stopped. Administrative SSH remains separate from the dashboard; there are no public dashboard listeners.
