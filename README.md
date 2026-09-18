@@ -1,26 +1,42 @@
 # Everhaven private dashboard
 
-This repository serves fictional portfolio data on DigitalOcean through an outbound LayerV connector. The public landing page is a separate Netlify deployment in `joeollis/everhavencapital`.
+Fictional portfolio data served on DigitalOcean through an outbound LayerV connector. The public landing page is a separate Netlify deployment in `joeollis/everhavencapital`.
 
-## Production design
+## Active deployment
 
-`compose.production.yaml` runs Nginx on **127.0.0.1:8080 inside a Docker network namespace**, shared with qurl v2.6.0. There are no published host ports. Both containers are non-root, read-only, drop all capabilities and disallow privilege escalation. The qurl image is pinned to the official release digest.
+Use **compose.native.yaml**. It runs Nginx on **127.0.0.1:8080 inside a Docker network namespace**, shared with qurl v2.6.0. No host ports are published. Both containers are non-root, read-only, drop all capabilities and disallow privilege escalation. The qurl image is pinned to the official release digest.
 
-Nginx sends no-store and no-referrer headers and loads no third-party fonts, scripts or telemetry. The `/healthz` route is private and supports real session-expiry checks. Already-downloaded content is not erased when a session expires.
+The official native CLI publishes the loopback service with `--foreground`, running the production daemon engine in the container process. Docker supervises that process and restarts it. Its stable Connector ID is `everhaven-dashboard-prod`; saved native identity and resource state live in the owner-only `state-v2/` volume. A clean stop closes sharing; the next start reuses the same CRID. This restart behavior was verified on the live demo.
 
-`dashboard.everhavencapital.com` must have no public DNS record. No custom-domain certificate or DNS delegation is needed for the origin. The legacy Netlify dashboard deployment and previews must remain private.
+Nginx sends no-store and no-referrer headers and loads no third-party fonts, scripts or telemetry. Its private `/healthz` route supports session-expiry checks. Downloaded content is not erased when a session expires.
 
-## Enrollment and deployment
+`dashboard.everhavencapital.com` has no public DNS records. No custom-domain certificate or DNS delegation is needed for the origin. The legacy Netlify dashboard and previews must remain private.
 
-Use the current LayerV protected-service setup to obtain a **version 2 headless share configuration and one-time enrollment token for the same production owner and resource**. Preserve the returned CRID, resource ID, routing ID, knock resource ID and serving epoch exactly. Do not derive identifiers from a hostname or copy old sandbox state.
+## First enrollment
 
-1. Place generated non-secret configuration in `runtime/share.yaml` (mode 0444). Set its loopback target to `http://127.0.0.1:8080` using the service setup.
-2. Create `state-v2/` and `secret-v2/` as UID/GID 65532 with mode 0700. The enrollment token goes into `secret-v2/enrollment-token`, owned by 65532:65532, mode 0400. Never put credentials into shell history, Git or logs.
-3. Stop the retired `qurl-connector` container. Retain its complete old state for rollback; do not mix identity files.
-4. Start with `docker compose -f compose.production.yaml -f compose.bootstrap.yaml up -d`. Confirm origin health and actual LayerV serving state.
-5. Warm-start using `docker compose -f compose.production.yaml up -d`. Confirm the resource is serving without an enrollment-token flag or secret mount, then remove the consumed one-time token.
-6. Set the resulting production CRID and a production mint key in the Netlify server environment. Verify a new qURL, single-use behavior, and a fresh origin request after the two-minute session expires.
+Use a production account setup key with native enrollment and connector enrollment permissions. Never put it in shell arguments, history, Git or image layers.
 
-The legacy `compose.yaml`, `connector.Dockerfile` and `qurl-proxy.yaml` are retained only for rollback/reference. Do not use the old `deploy.sh` installer for this production configuration.
+```sh
+install -d -m 0700 -o 65532 -g 65532 state-v2
+docker compose -f compose.native.yaml up -d web
+docker compose -f compose.native.yaml run --rm --no-deps qurl login
+# Paste the account key only at the hidden API-key prompt.
+docker compose -f compose.native.yaml up -d qurl
+docker compose -f compose.native.yaml logs --tail 30 qurl
+```
 
-Check the live host for unintended listeners and Docker port mappings, and test direct requests to its public IP. SSH is an administrative listener, not a dashboard listener.
+Wait for `Published` and `Status: serving`. Record the CRID verbatim. Configure the public site's server environment with that CRID and a separate read/write mint key. Revoke the temporary account setup key once enrollment and warm restart are verified; the saved restricted device identity handles subsequent starts.
+
+## Operations
+
+```sh
+docker compose -f compose.native.yaml ps
+docker compose -f compose.native.yaml restart qurl
+docker compose -f compose.native.yaml exec -T qurl /usr/local/bin/qurl inspect <CRID> -o json
+```
+
+A running container alone does not prove serving. Check `connection_state`, `daemon_state` and `local_target_health`, and test an actual qURL. If replacing the web container, recreate the qurl container too because they share a network namespace. Back up the entire state directory securely; do not copy selected identity files or share a state directory between independent deployments.
+
+The alternate `compose.production.yaml` plus `compose.bootstrap.yaml` implements LayerV's enterprise headless-config path, which requires genuine generated account-specific share identifiers. It is not the active deployment and must not be started against the native deployment's state directory.
+
+The legacy `compose.yaml`, `connector.Dockerfile` and `qurl-proxy.yaml` are retained for rollback/reference only. Their obsolete sandbox connector is stopped. Administrative SSH remains separate from the dashboard; there are no public dashboard listeners.
