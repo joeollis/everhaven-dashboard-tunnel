@@ -7,3 +7,5 @@ qurl-connector-linux-amd64*
 state-v2/
 secret-v2/
 runtime/
+
+state-enterprise/
