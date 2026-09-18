@@ -34,7 +34,7 @@ The sample data does not answer these questions. Do not invent management respon
 
 ## Access and machine-readable data
 
-Relative to the admitted dashboard URL, `research.json` provides the same data and `research.csv` provides the segment table. Both are served by the private application. Request them only through a valid admitted route; use no-store and do not follow an unexpected redirect.
+Use **View structured research (JSON)** and **Download data (CSV)** inside the admitted dashboard. These fetch `research.json` and `research.csv` through the existing protected connection. **Download analyst brief (Markdown)** fetches this document. Direct navigation to data URLs can be blocked on the demo route; use the in-page actions or supported WebMCP tools. Requests use no-store and reject redirects.
 
 Use the dashboard's **Check access now** button for a fresh `/healthz` request. The exact success body is `everhaven-private-origin`. Repeat after the two-minute session; a failed check alone has multiple possible causes. A new authorized qURL restoring access helps establish the expiry behavior. Downloaded information remains available after access ends.
 
