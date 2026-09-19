@@ -1,0 +1,40 @@
+{
+  "dataset_id": "harbor-house-q2-2026-demo",
+  "fictional": true,
+  "sponsor": "Everhaven Capital",
+  "investment": {
+    "name": "Harbor House",
+    "asset_type": "Multifamily apartments",
+    "city": "Raleigh, North Carolina",
+    "units": 84,
+    "occupied_units": 80,
+    "occupancy_percent": 95.2,
+    "acquired_year": 2023
+  },
+  "period": "Q2 2026",
+  "period_ended": "2026-06-30",
+  "currency": "USD",
+  "cash_flow": {
+    "rental_and_other_income": 486000,
+    "operating_expenses": 198000,
+    "net_operating_income": 288000,
+    "debt_service": 132000,
+    "capital_reserve_contribution": 36000,
+    "investor_distributions": 120000
+  },
+  "investor": {
+    "name": "Maya Chen",
+    "simulated_identity": true,
+    "contributed_capital": 250000,
+    "total_investor_equity": 8000000,
+    "equity_share_percent": 3.125,
+    "quarterly_distribution": 3750,
+    "distribution_paid_date": "2026-07-15"
+  },
+  "allocation_note": "Simplified pro rata allocation. No preferred return, promote or return of capital is modeled.",
+  "manager_update": [
+    "80 apartments occupied; four vacant units are being marketed.",
+    "$36,000 set aside for planned exterior maintenance.",
+    "Next quarter: lease remaining units and complete maintenance. Future distributions are not guaranteed."
+  ]
+}
