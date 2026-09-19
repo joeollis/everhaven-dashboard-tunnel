@@ -1,6 +1,6 @@
 # Everhaven private dashboard
 
-Fictional company research served on DigitalOcean through an outbound LayerV connector. The public landing page is a separate Netlify deployment in `joeollis/everhavencapital`.
+A fictional real estate investment report served on DigitalOcean through an outbound LayerV connector. The public landing page is a separate Netlify deployment in `joeollis/everhavencapital`.
 
 ## Active deployment
 
@@ -47,6 +47,8 @@ The prior personal-account deployment in `compose.native.yaml` and its `state-v2
 
 The production API rejects binding the active custom domain to this native connector: `custom_domain is not supported for qURL Connector resources`. The fresh portal hostname passed DNS verification and is Active, but resource assignment still fails. This reproduces the rejection independently of the older dashboard hostname registered in staging. The domain is unbound. Sessions use temporary `qurl.site` addresses. The dashboard UI misleadingly exposes a selector for this unsupported operation. Keep the origin private; no inbound ports should be opened to work around this limitation.
 
-## Analyst demo content
+## Investor demo content
 
-The briefing follows one pre-approved fictional external analyst, Maya Chen, reviewing Northline Manufacturing. Approval is simulated by the public demo, not authenticated by this static application. Research tables are server-rendered HTML; `brief.md`, `research.json` and `research.csv` provide the same fictional dataset through the protected route. They must not be copied into the public Netlify deployment. `check_protected_access` and `read_research_data` are optional WebMCP tools in supporting browsers; the fresh health button and relative data URLs remain the portable interfaces.
+Everhaven Capital is a fictional real estate investment company sharing the Harbor House quarterly report with Maya Chen, an approved investor. Sign-in and approval are simulated by the public demo; LayerV access is real. The static application does not authenticate actual investors. The report includes property cash flow and an explicitly simplified pro rata investor distribution.
+
+Report tables are server-rendered HTML. `report.md`, `report.json` and `report.csv` provide the same fictional data through the protected route; never copy them to the public Netlify deployment. In-page JSON/download buttons fetch through the admitted session. `check_protected_access` and `read_investment_report` are optional WebMCP tools. Deployment links teach how to deploy LayerV for the operator's own resource, not how to duplicate the demo's simulated authentication.

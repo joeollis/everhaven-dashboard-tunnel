@@ -1,0 +1,17 @@
+Section,Metric,Value,Unit
+Property,Total apartments,84,units
+Property,Occupied apartments,80,units
+Property,Occupancy,95.2,percent
+Cash flow,Rental and other income,486000,USD
+Cash flow,Operating expenses,198000,USD
+Cash flow,Net operating income,288000,USD
+Cash flow,Debt service,132000,USD
+Cash flow,Capital reserve contribution,36000,USD
+Cash flow,Investor distributions,120000,USD
+Maya Chen,Contributed capital,250000,USD
+Maya Chen,Total investor equity,8000000,USD
+Maya Chen,Equity share,3.125,percent
+Maya Chen,Quarterly distribution,3750,USD
+Metadata,Fictional,true,boolean
+Metadata,Period,Q2 2026,text
+Metadata,Investment,Harbor House,text
