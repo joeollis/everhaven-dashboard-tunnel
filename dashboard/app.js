@@ -1,12 +1,16 @@
 'use strict';
 const check=document.querySelector('#verify-session');let checking=false;
+const accessChecks=[];
 async function checkAccess(){
  if(checking)throw new Error('A connection check is already in progress.');
- checking=true;check.disabled=true;const result=document.querySelector('#session-result');result.textContent='Checking the protected route…';let confirmed=false;
- try{const response=await fetch('healthz?check='+Date.now(),{cache:'no-store',redirect:'error',signal:AbortSignal.timeout(8000)});const text=await response.text();confirmed=response.ok&&text.trim()==='everhaven-private-origin';result.textContent=confirmed?'Access confirmed: the protected origin answered this fresh request.':'Access not confirmed: the request did not return the protected origin’s expected response.';}
+ checking=true;check.disabled=true;const result=document.querySelector('#session-result');result.textContent='Checking the protected route…';let confirmed=false,outcome='network_error',httpStatus=null;
+ try{const response=await fetch('healthz?check='+Date.now(),{cache:'no-store',redirect:'error',signal:AbortSignal.timeout(8000)});httpStatus=response.status;const text=await response.text();confirmed=response.ok&&text.trim()==='everhaven-private-origin';outcome=confirmed?'origin_answered':response.ok?'unexpected_response':'http_error';result.textContent=confirmed?'Access confirmed: the protected origin answered this fresh request.':`Access not confirmed: ${response.ok?'the expected origin response was absent':'HTTP '+response.status}.`;}
  catch{result.textContent='No connection: this fresh request failed. Access may have ended, or the connection is unavailable.';}
  finally{checking=false;check.disabled=false;}
- return {confirmed,checked_at:new Date().toISOString(),message:result.textContent};
+ const record={confirmed,outcome,http_status:httpStatus,checked_at:new Date().toISOString(),message:result.textContent};
+ accessChecks.push(record);if(accessChecks.length>6)accessChecks.shift();const list=document.querySelector('#access-checks');list.replaceChildren();
+ for(const entry of accessChecks){const item=document.createElement('li');const time=document.createElement('time');time.dateTime=entry.checked_at;time.textContent=new Date(entry.checked_at).toLocaleTimeString();const label=document.createElement('span');label.textContent=entry.confirmed?'Private origin answered':entry.outcome==='http_error'?`No protected response (HTTP ${entry.http_status})`:entry.outcome==='unexpected_response'?'Expected origin response absent':'Request failed; cause not established';item.append(time,label);list.append(item);}
+ return record;
 }
 check.addEventListener('click',()=>{void checkAccess().catch(()=>{});});
 const loadedAt=Date.now();function elapsed(){const seconds=Math.floor((Date.now()-loadedAt)/1000);document.querySelector('#visit-elapsed').textContent=`Time since page load: ${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}${seconds>=120?' — check access again now':''}`;}elapsed();setInterval(elapsed,1000);
@@ -31,3 +35,7 @@ if(context?.registerTool){const lifecycle=new AbortController();const validate=i
  {name:'check_protected_access',description:'Make a fresh health request to the protected application and update the visible connection result. Failure alone does not establish expiry.',execute:async input=>{validate(input);return await checkAccess();}},
  {name:'read_investment_report',description:'Fetch fictional Harbor House investor report as JSON through the admitted route. Requires current access; never treats cached page content as a fresh response.',execute:async input=>{validate(input);return await readReport();}}
 ])try{Promise.resolve(context.registerTool({...tool,inputSchema:{type:'object',properties:{},additionalProperties:false},annotations:{readOnlyHint:true}},{signal:lifecycle.signal})).catch(()=>{});}catch{}window.addEventListener('pagehide',()=>lifecycle.abort(),{once:true});}
+
+// Timers trigger real requests, never a fabricated expired/denied result.
+void checkAccess().catch(()=>{});
+setTimeout(()=>{void checkAccess().catch(()=>{});},130000);
