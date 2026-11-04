@@ -1,9 +1,142 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Harbor House investor report — LayerV demo</title><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="styles.css"><link rel="alternate" type="text/markdown" href="report.md" title="Investment report"><script src="app.js" defer></script></head><body>
-<a class="skip" href="#main">Skip to investor report</a><header><div class="wrap top"><img src="layerv-wordmark.svg" alt="LayerV" width="122" height="28"><span>LIVE PROTECTION DEMO</span><a href="https://everhavencapital.com/" rel="noreferrer">Back to the demo ↗</a></div></header>
-<main class="wrap" id="main"><section class="access" aria-labelledby="access-title"><div><p class="eyebrow">YOUR QURL OPENED THIS PRIVATE REPORT</p><h2 id="access-title">You have access. The origin stays private.</h2><p>LayerV brought you into the report application through its qURL Connector. No public inbound web port was opened on the origin.</p></div><div class="connection"><button id="verify-session" class="button">Check access now ↻</button><p id="session-result" role="status">Checking this visit’s connection…</p><p id="visit-elapsed" class="fine" aria-live="off">Time since page load: 0:00</p><p class="fine">Checked on arrival and again after 130 seconds. You can also check manually. Downloaded content remains after expiry.</p></div></section>
-<section class="check-evidence" aria-labelledby="checks-title"><div><h2 id="checks-title">This visit’s connection checks</h2><p>Each entry is a new request to the protected origin. Failures can also mean a network or service problem.</p></div><ol id="access-checks" aria-live="polite"><li>No check completed yet.</li></ol><a href="https://everhavencapital.com/protection-evidence.md" rel="noreferrer">Read the separate deployment verification ↗</a></section>
-<article class="briefing" aria-labelledby="title"><div class="heading"><div><p class="eyebrow">EVERHAVEN CAPITAL · INVESTOR RELATIONS</p><h1 id="title">Harbor House</h1><p class="subtitle">Quarterly investment report · Q2 2026</p></div><p class="investor">Prepared for <strong>Maya Chen</strong><span>Investor · Simulated sign-in</span></p></div><p class="property-summary">84 apartments · Raleigh, North Carolina · Acquired 2023</p><p class="sample-note">LayerV demonstration. Everhaven Capital, this property, investor and all financial figures are fictional.</p>
-<dl class="metrics"><div><dt>Occupancy at quarter end</dt><dd>95.2%</dd><p>80 of 84 apartments leased</p></div><div><dt>Net operating income</dt><dd>$288,000</dd><p>For the three months ended June 30</p></div><div><dt>Your quarterly distribution</dt><dd>$3,750</dd><p>Paid July 15, 2026 · Illustrative</p></div></dl>
-<div class="report-grid"><section aria-labelledby="cash-title"><h2 id="cash-title">The quarter in dollars</h2><div class="table-scroll"><table><caption>Property cash flow · Q2 2026 · USD</caption><thead><tr><th scope="col">Item</th><th scope="col">Amount</th></tr></thead><tbody><tr><th scope="row">Rental &amp; other income</th><td>$486,000</td></tr><tr><th scope="row">Operating expenses</th><td>($198,000)</td></tr><tr class="subtotal"><th scope="row">Net operating income</th><td>$288,000</td></tr><tr><th scope="row">Debt service</th><td>($132,000)</td></tr><tr><th scope="row">Capital reserve contribution</th><td>($36,000)</td></tr></tbody><tfoot><tr><th scope="row">Total investor distributions</th><td>$120,000</td></tr></tfoot></table></div><p class="fine">Simplified cash-flow illustration. Net operating income is before debt service and capital reserves.</p><div class="downloads"><button class="text-button" id="download-csv">Download report data (CSV) ↓</button><button class="text-button" id="download-report">Download investor report (Markdown) ↓</button></div></section>
-<section class="investor-account" aria-labelledby="position-title"><p class="eyebrow">YOUR INVESTMENT</p><h2 id="position-title">Maya’s position</h2><dl class="position"><div><dt>Contributed capital</dt><dd>$250,000</dd></div><div><dt>Share of investor equity</dt><dd>3.125%</dd></div><div><dt>Quarterly distribution</dt><dd>$3,750</dd></div></dl><p class="fine">Illustrative pro rata allocation: $250,000 of $8,000,000 investor equity. $120,000 × 3.125% = $3,750. No preferred return, promote or return of capital is modeled.</p><h3>Manager’s update</h3><p>Leasing ended the quarter at 80 occupied apartments. Four vacant units are being marketed. The property set aside $36,000 for planned exterior maintenance.</p><p>Next quarter’s priorities: lease the remaining units and complete the maintenance work. Future distributions are not guaranteed.</p></section></div>
-</article><section class="data-view" aria-label="Machine-readable investment report"><p id="report-status" role="status"></p><pre id="report-json" hidden tabindex="0" aria-label="Investment report JSON"></pre></section><footer><p>Fictional investment report · Real LayerV access</p><div><button class="text-button" id="read-report">View report data (JSON)</button><a href="https://everhavencapital.com/protect-a-resource/" rel="noreferrer">Deploy LayerV to protect your resources ↗</a><a href="https://everhavencapital.com/agent.md" rel="noreferrer">LayerV deployment instructions for agents</a></div></footer></main></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Harbor House investor report — LayerV demo</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="styles.css">
+<link rel="alternate" type="text/markdown" href="report.md" title="Investment report">
+<script src="app.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the report</a>
+
+<section class="secret" aria-labelledby="secret-title">
+<div class="wrap secret-inner">
+<img class="owl" src="art/owl-doorkeeper.png" width="150" height="150" alt="">
+<div class="secret-copy">
+<p class="pill" id="live-pill" data-state="checking"><span class="pdot" aria-hidden="true"></span><span id="live-pill-text">Checking the hidden server…</span></p>
+<h1 id="secret-title">Psst. You’re inside a website that doesn’t exist on the internet.</h1>
+<p class="secret-sub">You got in with a one-time key from LayerV. Everything on this page is hidden from everyone else:</p>
+<ul class="hidden-list">
+<li><strong>This whole website</strong><span>every page, button and chart</span></li>
+<li><strong>Its data files</strong><span>the CSV, Markdown and JSON below</span></li>
+<li><strong>The server itself</strong><span>no open web ports, no public address</span></li>
+</ul>
+</div>
+</div>
+</section>
+
+<main class="wrap" id="main">
+<article class="report" aria-labelledby="title">
+<header class="report-head">
+<div>
+<p class="eyebrow">Everhaven Capital · Investor relations</p>
+<h2 id="title">Harbor House</h2>
+<p class="subtitle">Quarterly investment report · Q2 2026</p>
+<p class="property">84 apartments · Raleigh, North Carolina · Acquired 2023</p>
+</div>
+<div class="for">
+<span class="stamp">Opened with your key</span>
+<p>Prepared for <strong>Maya Chen</strong><br><span>Investor · simulated sign-in</span></p>
+</div>
+</header>
+
+<div class="kpis">
+<section class="kpi" aria-labelledby="occ-title">
+<h3 id="occ-title">Occupancy</h3>
+<p class="big">95.2%</p>
+<p class="note">80 of 84 apartments leased</p>
+<div class="units" role="img" aria-label="80 of 84 apartments leased"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i></div>
+</section>
+<section class="kpi" aria-labelledby="noi-title">
+<h3 id="noi-title">Net operating income</h3>
+<p class="big">$288,000</p>
+<p class="note">For the three months ended June 30</p>
+</section>
+<section class="kpi gold" aria-labelledby="dist-title">
+<h3 id="dist-title">Your distribution</h3>
+<p class="big">$3,750</p>
+<p class="note">Paid July 15, 2026 · illustrative</p>
+</section>
+</div>
+
+<div class="grid">
+<section class="card" aria-labelledby="cash-title">
+<h3 id="cash-title">The quarter in dollars</h3>
+<ul class="bars" aria-hidden="true">
+<li><span>Rental &amp; other income</span><b class="w1"></b><em>$486,000</em></li>
+<li class="neg"><span>Operating expenses</span><b class="w2"></b><em>−$198,000</em></li>
+<li class="sub"><span>Net operating income</span><b class="w3"></b><em>$288,000</em></li>
+<li class="neg"><span>Debt service</span><b class="w4"></b><em>−$132,000</em></li>
+<li class="neg"><span>Capital reserve</span><b class="w5"></b><em>−$36,000</em></li>
+<li class="total"><span>Investor distributions</span><b class="w6"></b><em>$120,000</em></li>
+</ul>
+<table class="sr-only">
+<caption>Property cash flow · Q2 2026 · USD</caption>
+<thead><tr><th scope="col">Item</th><th scope="col">Amount</th></tr></thead>
+<tbody>
+<tr><th scope="row">Rental &amp; other income</th><td>$486,000</td></tr>
+<tr><th scope="row">Operating expenses</th><td>($198,000)</td></tr>
+<tr><th scope="row">Net operating income</th><td>$288,000</td></tr>
+<tr><th scope="row">Debt service</th><td>($132,000)</td></tr>
+<tr><th scope="row">Capital reserve contribution</th><td>($36,000)</td></tr>
+</tbody>
+<tfoot><tr><th scope="row">Total investor distributions</th><td>$120,000</td></tr></tfoot>
+</table>
+<p class="fine">Simplified cash-flow illustration. Net operating income is before debt service and capital reserves.</p>
+</section>
+
+<section class="card" aria-labelledby="position-title">
+<h3 id="position-title">Maya’s position</h3>
+<dl class="position">
+<div><dt>Contributed capital</dt><dd>$250,000</dd></div>
+<div><dt>Share of investor equity</dt><dd>3.125%</dd></div>
+<div class="hl"><dt>Quarterly distribution</dt><dd>$3,750</dd></div>
+</dl>
+<p class="fine">$250,000 of $8,000,000 investor equity. $120,000 × 3.125% = $3,750. No preferred return, promote or return of capital is modeled.</p>
+<h4>Manager’s update</h4>
+<p>Leasing ended the quarter at 80 occupied apartments. Four vacant units are being marketed. The property set aside $36,000 for planned exterior maintenance.</p>
+<p>Next quarter: lease the remaining units and finish the maintenance work. Future distributions are not guaranteed.</p>
+</section>
+</div>
+
+<section class="card takeaway" aria-labelledby="dl-title">
+<img src="art/step-03-open.png" width="88" height="88" alt="">
+<div>
+<h3 id="dl-title">Take it with you</h3>
+<p>These files come through the same hidden connection. Once saved, they’re yours to keep, even after your pass ends.</p>
+<div class="downloads">
+<button class="button" id="download-csv" type="button">Data (CSV) ↓</button>
+<button class="button" id="download-report" type="button">Report (Markdown) ↓</button>
+<button class="button ghost" id="read-report" type="button">Peek at the JSON</button>
+</div>
+<p id="report-status" class="fine" role="status"></p>
+<pre id="report-json" class="json" hidden></pre>
+</div>
+</section>
+</article>
+
+<section class="proof" aria-labelledby="checks-title">
+<div class="proof-head">
+<div>
+<h2 id="checks-title">Is the door still open?</h2>
+<p>Each check is a fresh request to the hidden server, through LayerV. We check when you arrive and again after about two minutes, when a demo pass ends.</p>
+</div>
+<button id="verify-session" class="button" type="button">Check now ↻</button>
+</div>
+<p id="session-result" role="status">Checking this visit’s connection…</p>
+<ol id="access-checks" aria-live="polite"><li>No check completed yet.</li></ol>
+<p id="visit-elapsed" class="fine" aria-live="off">You’ve been inside for 0:00</p>
+</section>
+
+<footer class="foot">
+<p>Everhaven Capital, Harbor House, Maya Chen and every number here are made up. The hiding is real.</p>
+<p><a href="https://everhavencapital.com/" rel="noreferrer">Back to the demo</a> · <a href="https://everhavencapital.com/protect-a-resource/" rel="noreferrer">Hide your own app with LayerV</a> · <a href="https://everhavencapital.com/agent.md" rel="noreferrer">For AI agents</a></p>
+</footer>
+</main>
+</body>
+</html>
