@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Traffic test — Harbor House</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="stress.css">
+<script src="stress.js" defer></script>
+</head>
+<body>
+<main class="box">
+<h1>Traffic test</h1>
+<p class="sub">Sends a known amount of data through the hidden link, so you can check the totals LayerV reports. The data is random, so nothing along the way can compress it.</p>
+
+<fieldset>
+<legend>Download (server → you)</legend>
+<label>Size <select id="down-mib">
+<option value="10">10 MiB</option>
+<option value="100" selected>100 MiB</option>
+<option value="250">250 MiB</option>
+<option value="500">500 MiB</option>
+</select></label>
+<label class="check"><input type="checkbox" id="autostart" checked> Start by itself when this page opens</label>
+<button id="down-go" type="button">Start download</button>
+</fieldset>
+
+<fieldset>
+<legend>Upload (you → server)</legend>
+<label>Size <select id="up-mib">
+<option value="10" selected>10 MiB</option>
+<option value="50">50 MiB</option>
+<option value="100">100 MiB</option>
+</select></label>
+<button id="up-go" type="button">Start upload</button>
+<p class="note">Sent as 512 KiB pieces. The server refuses them after reading (405), which is expected: the bytes still cross the link.</p>
+</fieldset>
+
+<button id="stop" type="button" class="secondary">Stop</button>
+
+<section aria-live="polite">
+<h2>Results</h2>
+<p id="status">Not started.</p>
+<table>
+<tbody>
+<tr><th>Requests sent</th><td id="r-req">0</td></tr>
+<tr><th>Download, file data only</th><td id="r-down">0</td></tr>
+<tr><th>Download, with headers (browser count)</th><td id="r-down-wire">—</td></tr>
+<tr><th>Upload, file data only</th><td id="r-up">0</td></tr>
+<tr><th>Time</th><td id="r-time">—</td></tr>
+<tr><th>Started (UTC)</th><td id="r-start">—</td></tr>
+</tbody>
+</table>
+<p class="note">Compare the “file data only” lines with LayerV’s totals. Expect LayerV to be a little higher: each request also carries headers and encryption overhead, roughly 0.5–1 KB per request, plus this page itself.</p>
+</section>
+</main>
+</body>
+</html>
